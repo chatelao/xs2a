@@ -19,8 +19,7 @@ package de.adorsys.psd2.xs2a.core.pis;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
 import java.util.Optional;
 
 /**
@@ -30,16 +29,8 @@ import java.util.Optional;
  * Online-Banking are not supporting this execution rule.
  */
 public enum PisExecutionRule {
-    FOLLOWING("following"), PRECEEDING("preceeding");
+    FOLLOWING("following"), PRECEDING("preceding");
     private String value;
-
-    private final static Map<String, PisExecutionRule> container = new HashMap<>();
-
-    static {
-        for (PisExecutionRule rule : values()) {
-            container.put(rule.getValue(), rule);
-        }
-    }
 
     @JsonCreator
     PisExecutionRule(String value) {
@@ -51,8 +42,10 @@ public enum PisExecutionRule {
         return value;
     }
 
-    public static Optional<PisExecutionRule> getByValue(String name) {
-        return Optional.ofNullable(container.get(name));
+    public static Optional<PisExecutionRule> getByValue(String value) {
+        return Arrays.stream(values())
+            .filter(er -> er.getValue().equals(value))
+            .findFirst();
     }
 
     @Override

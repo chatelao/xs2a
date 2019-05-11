@@ -74,10 +74,6 @@ public class PaymentModelMapperXs2a {
         return buildBinaryBodyData(httpServletRequest);
     }
 
-    public Object mapToXs2aRawPayment(String payment) {
-        return payment.getBytes();
-    }
-
     private <R> R validatePayment(Object payment, Class<R> clazz) {
         R result = mapper.convertValue(payment, clazz);
         validationService.validate(result);
@@ -107,7 +103,7 @@ public class PaymentModelMapperXs2a {
         return mapper.convertValue(reference12, AccountReference.class);
     }
 
-    private PeriodicPayment mapToXs2aPeriodicPayment(PeriodicPaymentInitiationJson paymentRequest) {
+    PeriodicPayment mapToXs2aPeriodicPayment(PeriodicPaymentInitiationJson paymentRequest) {
         PeriodicPayment payment = new PeriodicPayment();
 
         payment.setEndToEndIdentification(paymentRequest.getEndToEndIdentification());
@@ -122,8 +118,8 @@ public class PaymentModelMapperXs2a {
         payment.setPurposeCode(new Xs2aPurposeCode("N/A"));
         payment.setRemittanceInformationUnstructured(paymentRequest.getRemittanceInformationUnstructured());
         payment.setRemittanceInformationStructured(new Remittance());
-        payment.setRequestedExecutionDate(LocalDate.now());
-        payment.setRequestedExecutionTime(OffsetDateTime.now().plusHours(1));
+//        payment.setRequestedExecutionDate(LocalDate.now());
+//        payment.setRequestedExecutionTime(OffsetDateTime.now().plusHours(1));
 
         payment.setStartDate(paymentRequest.getStartDate());
         payment.setExecutionRule(mapToPisExecutionRule(paymentRequest.getExecutionRule()).orElse(null));
@@ -136,7 +132,7 @@ public class PaymentModelMapperXs2a {
     private Optional<PisDayOfExecution> mapToPisDayOfExecution(DayOfExecution dayOfExecution) {
         return Optional.ofNullable(dayOfExecution)
                    .map(DayOfExecution::toString)
-                   .flatMap(PisDayOfExecution::getByValue);
+                   .map(PisDayOfExecution::getByValue);
     }
 
     private Optional<PisExecutionRule> mapToPisExecutionRule(ExecutionRule rule) {

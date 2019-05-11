@@ -119,7 +119,7 @@ public class PaymentMapper {
     private Optional<PisDayOfExecution> mapToPisDayOfExecution(DayOfExecution dayOfExecution) {
         return Optional.ofNullable(dayOfExecution)
                    .map(DayOfExecution::toString)
-                   .flatMap(PisDayOfExecution::getByValue);
+                   .map(PisDayOfExecution::getByValue);
     }
 
     private Xs2aAmount mapToXs2aAmount(Amount amount) {
