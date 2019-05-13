@@ -24,10 +24,13 @@ import org.mapstruct.Mapping;
 import org.mapstruct.NullValueMappingStrategy;
 
 @Mapper(componentModel = "spring",
-    nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT,
-    imports = {Xs2aCountryCode.class})
+    nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
 public interface Xs2aAddressMapper {
 
-    @Mapping(target = "country", expression = "java( new Xs2aCountryCode(address.getCountry()) )")
+    @Mapping(target = "country", source = "address", qualifiedByName = "mapToXs2aCountryCode")
     Xs2aAddress mapToXs2aAddress(Address address);
+
+    default Xs2aCountryCode mapToXs2aCountryCode(Address address) {
+        return new Xs2aCountryCode(address.getCountry());
+    }
 }
