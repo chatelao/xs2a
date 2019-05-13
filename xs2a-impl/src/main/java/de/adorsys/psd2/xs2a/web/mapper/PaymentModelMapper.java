@@ -18,18 +18,14 @@ package de.adorsys.psd2.xs2a.web.mapper;
 
 import de.adorsys.psd2.model.*;
 import de.adorsys.psd2.xs2a.domain.Xs2aAmount;
-import de.adorsys.psd2.xs2a.domain.code.Xs2aPurposeCode;
 import de.adorsys.psd2.xs2a.domain.pis.BulkPayment;
 import de.adorsys.psd2.xs2a.domain.pis.PeriodicPayment;
-import de.adorsys.psd2.xs2a.domain.pis.Remittance;
 import de.adorsys.psd2.xs2a.domain.pis.SinglePayment;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring",
-    imports = {Xs2aPurposeCode.class, Remittance.class},
-    uses = {Xs2aAddressMapper.class})
+@Mapper(componentModel = "spring", uses = {Xs2aAddressMapper.class})
 public interface PaymentModelMapper {
 
     PeriodicPayment mapToXs2aPayment(PeriodicPaymentInitiationJson paymentRequest);
