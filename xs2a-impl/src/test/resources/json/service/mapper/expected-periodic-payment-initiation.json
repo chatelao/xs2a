@@ -33,12 +33,6 @@
     "amount": "1000.00",
     "currency": "EUR"
   },
-  "purposeCode": {
-    "code": "N/A"
-  },
-  "remittanceInformationStructured": {},
   "remittanceInformationUnstructured": "Ref. Number TELEKOM-1222",
-  "startDate": "2017-03-03",
-  "ultimateCreditor": "Telekom",
-  "ultimateDebtor": "NOT SUPPORTED"
+  "startDate": "2017-03-03"
 }

@@ -17,10 +17,15 @@
 package de.adorsys.psd2.xs2a.web.mapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.adorsys.psd2.model.BulkPaymentInitiationJson;
+import de.adorsys.psd2.model.PaymentInitiationJson;
 import de.adorsys.psd2.model.PeriodicPaymentInitiationJson;
+import de.adorsys.psd2.xs2a.core.profile.PaymentType;
+import de.adorsys.psd2.xs2a.domain.pis.BulkPayment;
+import de.adorsys.psd2.xs2a.domain.pis.PaymentInitiationParameters;
 import de.adorsys.psd2.xs2a.domain.pis.PeriodicPayment;
-import de.adorsys.psd2.xs2a.service.mapper.AccountModelMapper;
-import de.adorsys.psd2.xs2a.service.mapper.AmountModelMapper;
+import de.adorsys.psd2.xs2a.domain.pis.SinglePayment;
+import de.adorsys.psd2.xs2a.service.validator.ValueValidatorService;
 import de.adorsys.psd2.xs2a.util.reader.JsonReader;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +33,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import javax.validation.Validation;
 
 import static org.junit.Assert.assertEquals;
 
@@ -38,29 +45,63 @@ public class PaymentModelMapperXs2aTest {
     @Autowired
     private PaymentModelMapper paymentModelMapper;
 
-    PaymentModelMapperXs2a paymentModelMapperXs2a;
+    private PaymentModelMapperXs2a paymentModelMapperXs2a;
+    private PaymentInitiationParameters paymentInitiationParameters;
     private JsonReader jsonReader = new JsonReader();
 
     @Before
     public void setUp() {
-        AccountModelMapper accountModelMapper = new AccountModelMapper(null, null);
-        AmountModelMapper amountModelMapper = new AmountModelMapper(null);
-        paymentModelMapperXs2a = new PaymentModelMapperXs2a(new ObjectMapper(), null, accountModelMapper,
-            null, amountModelMapper, null);
+        paymentInitiationParameters = new PaymentInitiationParameters();
+
+        ValueValidatorService validatorService = new ValueValidatorService(
+            Validation.buildDefaultValidatorFactory().getValidator());
+        paymentModelMapperXs2a = new PaymentModelMapperXs2a(new ObjectMapper(), validatorService,
+            null, null, paymentModelMapper);
     }
 
     @Test
-    public void mapToXs2aPayment_Periodic() {
+    public void mapToXs2aPayment_PeriodicPayment() {
+        paymentInitiationParameters.setPaymentType(PaymentType.PERIODIC);
+
         PeriodicPaymentInitiationJson periodicPaymentInitiationJson =
             jsonReader.getObjectFromFile("json/service/mapper/periodic-payment-initiation.json",
                 PeriodicPaymentInitiationJson.class);
-        PeriodicPayment actualPeriodicPayment = paymentModelMapperXs2a.mapToXs2aPeriodicPayment(periodicPaymentInitiationJson);
-        System.out.println("periodicPayment = " + actualPeriodicPayment);
+        PeriodicPayment actualPeriodicPayment = (PeriodicPayment) paymentModelMapperXs2a.mapToXs2aPayment(
+            periodicPaymentInitiationJson, paymentInitiationParameters);
 
-//        PeriodicPayment expectedPeriodicPayment = jsonReader.getObjectFromFile("json/service/mapper/expected-periodic-payment-initiation.json",
-//            PeriodicPayment.class);
-//        assertEquals(expectedPeriodicPayment, actualPeriodicPayment);
-
-        assertEquals(paymentModelMapper.mapToXs2aPayment(periodicPaymentInitiationJson), actualPeriodicPayment);
+        PeriodicPayment expectedPeriodicPayment = jsonReader.getObjectFromFile("json/service/mapper/expected-periodic-payment-initiation.json",
+            PeriodicPayment.class);
+        assertEquals(expectedPeriodicPayment, actualPeriodicPayment);
     }
+
+    @Test
+    public void mapToXs2aPayment_SinglePayment() {
+        paymentInitiationParameters.setPaymentType(PaymentType.SINGLE);
+
+        PaymentInitiationJson singlePaymentInitiationJson =
+            jsonReader.getObjectFromFile("json/service/mapper/single-payment-initiation.json",
+                PaymentInitiationJson.class);
+        SinglePayment actualSinglePayment = (SinglePayment) paymentModelMapperXs2a.mapToXs2aPayment(
+            singlePaymentInitiationJson, paymentInitiationParameters);
+
+        SinglePayment expectedSinglePayment = jsonReader.getObjectFromFile("json/service/mapper/expected-single-payment-initiation.json",
+            SinglePayment.class);
+        assertEquals(expectedSinglePayment, actualSinglePayment);
+    }
+
+    @Test
+    public void mapToXs2aPayment_BulkPayment() {
+        paymentInitiationParameters.setPaymentType(PaymentType.BULK);
+
+        BulkPaymentInitiationJson bulkPaymentInitiationJson =
+            jsonReader.getObjectFromFile("json/service/mapper/bulk-payment-initiation.json",
+                BulkPaymentInitiationJson.class);
+        BulkPayment actualBulkPayment = (BulkPayment) paymentModelMapperXs2a.mapToXs2aPayment(
+            bulkPaymentInitiationJson, paymentInitiationParameters);
+
+        BulkPayment expectedSinglePayment = jsonReader.getObjectFromFile("json/service/mapper/expected-bulk-payment-initiation.json",
+            BulkPayment.class);
+        assertEquals(expectedSinglePayment, actualBulkPayment);
+    }
+
 }

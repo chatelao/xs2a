@@ -17,38 +17,40 @@
 package de.adorsys.psd2.xs2a.web.mapper;
 
 import de.adorsys.psd2.model.*;
-import de.adorsys.psd2.xs2a.core.pis.PisExecutionRule;
 import de.adorsys.psd2.xs2a.domain.Xs2aAmount;
 import de.adorsys.psd2.xs2a.domain.code.Xs2aPurposeCode;
 import de.adorsys.psd2.xs2a.domain.pis.BulkPayment;
 import de.adorsys.psd2.xs2a.domain.pis.PeriodicPayment;
 import de.adorsys.psd2.xs2a.domain.pis.Remittance;
 import de.adorsys.psd2.xs2a.domain.pis.SinglePayment;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.ValueMapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring",
     imports = {Xs2aPurposeCode.class, Remittance.class},
     uses = {Xs2aAddressMapper.class})
 public interface PaymentModelMapper {
 
-    String NOT_SUPPORTED = "NOT SUPPORTED";
-
-    @Mapping(target = "ultimateDebtor", constant = NOT_SUPPORTED) //Deprecated
-    @Mapping(target = "ultimateCreditor", source = "creditorName") //Deprecated
-    @Mapping(target = "purposeCode", expression = "java( new Xs2aPurposeCode(\"N/A\") )") //Deprecated
-    @Mapping(target = "remittanceInformationStructured", expression = "java( new Remittance() )") //Deprecated
     PeriodicPayment mapToXs2aPayment(PeriodicPaymentInitiationJson paymentRequest);
 
-    @Mapping(target = "ultimateDebtor", constant = NOT_SUPPORTED)
     SinglePayment mapToXs2aPayment(PaymentInitiationJson paymentRequest);
 
     BulkPayment mapToXs2aPayment(BulkPaymentInitiationJson paymentRequest);
 
     Xs2aAmount mapToXs2aAmount(Amount amount);
 
-    @ValueMapping(target = "FOLLOWING", source = "FOLLOWING")
-    @ValueMapping(target = "PRECEDING", source = "PRECEDING")
-    PisExecutionRule mapToPisExecutionRule(ExecutionRule rule);
+    de.adorsys.psd2.xs2a.core.profile.AccountReference mapToAccountReference(AccountReference accountReference);
+
+    @AfterMapping
+    default void mapToXs2aPaymentAfterMapping(BulkPaymentInitiationJson paymentRequest,
+                                              @MappingTarget BulkPayment bulkPayment){
+        bulkPayment.getPayments().forEach(bp -> {
+            bp.setRequestedExecutionDate(paymentRequest.getRequestedExecutionDate());
+            bp.setRequestedExecutionTime(paymentRequest.getRequestedExecutionTime());
+            bp.setDebtorAccount(mapToAccountReference(paymentRequest.getDebtorAccount()));
+        });
+    }
+
+
 }
