@@ -326,6 +326,7 @@ public class ConsentControllerTest {
         ConsentsResponse201 response = new ConsentsResponse201();
         response.setConsentStatus(de.adorsys.psd2.model.ConsentStatus.RECEIVED);
         response.setConsentId(consentId);
+        response.setPsuMessage("test psu message");
 
         return isEmpty(consentId)
                    ? ResponseObject.<ConsentsResponse201>builder().fail(ErrorType.AIS_404, of(MessageErrorCode.RESOURCE_UNKNOWN_404)).build()
