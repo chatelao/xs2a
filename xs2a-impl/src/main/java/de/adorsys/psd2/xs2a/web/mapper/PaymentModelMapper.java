@@ -47,6 +47,4 @@ public interface PaymentModelMapper {
             bp.setDebtorAccount(mapToAccountReference(paymentRequest.getDebtorAccount()));
         });
     }
-
-
 }

@@ -102,7 +102,7 @@ public class SpiPeriodicPaymentMapper {
     private Optional<PisDayOfExecution> mapToPisDayOfExecution(AspspDayOfExecution dayOfExecution) {
         return Optional.ofNullable(dayOfExecution)
                    .map(AspspDayOfExecution::toString)
-                   .map(PisDayOfExecution::getByValue);
+                   .flatMap(PisDayOfExecution::getByValue);
     }
 
     private Optional<PisExecutionRule> mapToPisExecutionRule(AspspExecutionRule rule) {

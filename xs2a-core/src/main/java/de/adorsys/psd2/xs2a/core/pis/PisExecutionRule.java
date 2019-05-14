@@ -30,6 +30,7 @@ import java.util.Optional;
  */
 public enum PisExecutionRule {
     FOLLOWING("following"), PRECEDING("preceding");
+
     private String value;
 
     @JsonCreator
@@ -43,14 +44,12 @@ public enum PisExecutionRule {
     }
 
     public static Optional<PisExecutionRule> getByValue(String value) {
-        return Arrays.stream(values())
-            .filter(er -> er.getValue().equals(value))
-            .findFirst();
+        return Arrays.stream(values()).filter(doe -> doe.getValue().equals(value)).findAny();
     }
 
     @Override
     public String toString() {
-        return String.valueOf(value);
+        return value;
     }
 }
 

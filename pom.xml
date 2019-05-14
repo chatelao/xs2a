@@ -668,6 +668,10 @@ Use it manually to generate javadocs. Don't commit it
                     </rulesets>
                     <failOnViolation>true</failOnViolation>
                     <printFailingErrors>true</printFailingErrors>
+                    <excludeRoots>
+                        <excludeRoot>../xs2a-impl/target/generated-sources/annotations/
+                        </excludeRoot>
+                    </excludeRoots>
                 </configuration>
             </plugin>
             <plugin>

@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * Day of execution as string in the form DD.  This string consists always of two characters.  31 is ultimo of the
@@ -94,18 +95,23 @@ public enum PisDayOfExecution {
         this.value = value;
     }
 
-    @Override
-    @JsonValue
-    public String toString() {
-        return String.valueOf(value);
+    public String getValue() {
+        return value;
+    }
+
+    public static Optional<PisDayOfExecution> getByValue(String value) {
+        return Optional.ofNullable(fromValue(value));
     }
 
     @JsonCreator
-    public static PisDayOfExecution getByValue(String text) {
-        return Arrays.stream(values())
-            .filter(er -> er.value.equals(text)).findFirst()
-            .orElse(null);
+    public static PisDayOfExecution fromValue(String value) {
+        return Arrays.stream(values()).filter(doe -> doe.getValue().equals(value)).findFirst().orElse(null);
     }
 
+    @Override
+    @JsonValue
+    public String toString() {
+        return value;
+    }
 }
 
